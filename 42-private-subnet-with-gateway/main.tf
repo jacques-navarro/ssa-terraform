@@ -7,7 +7,7 @@ resource "aws_vpc" "nat-gateway" {
   enable_dns_support = true
 
   tags = {
-    Name = "nat-gateway"
+    Name = var.name
   }
 }
 
@@ -15,7 +15,7 @@ resource "aws_internet_gateway" "nat-gateway" {
   vpc_id = aws_vpc.nat-gateway.id
 
   tags = {
-    Name = "nat-gateway"
+    Name = var.name
   }
 }
 
@@ -25,7 +25,7 @@ resource "aws_subnet" "nat-gateway-public" {
   availability_zone = "eu-central-1a"
 
   tags = {
-    Name = "nat-gateway"
+    Name = var.name
   }
 }
 
@@ -38,7 +38,7 @@ resource "aws_subnet" "nat-gateway-private" {
   availability_zone = "eu-central-1a"
 
   tags = {
-    Name = "nat-gateway"
+    Name = var.name
   }
 }
 
@@ -47,7 +47,7 @@ resource "aws_security_group" "nat-gateway" {
   vpc_id = aws_vpc.nat-gateway.id
 
   tags = {
-    Name = "nat-gateway"
+    Name = var.name
   }
 }
 
@@ -59,7 +59,7 @@ resource "aws_vpc_security_group_ingress_rule" "ssh-rule" {
   to_port           = 22
 
   tags = {
-    Name = "nat-gateway"
+    Name = var.name
   }
 }
 
@@ -83,7 +83,7 @@ resource "aws_nat_gateway" "nat-gateway" {
   private_ip    = "10.0.0.20"
 
   tags = {
-    Name = "nat-gateway"
+    Name = var.name
   }
 }
 
@@ -106,7 +106,7 @@ resource "aws_route_table" "nat-gateway" {
   }
 
   tags = {
-    Name = "nat-gateway"
+    Name = var.name
   }
 }
 
@@ -129,7 +129,7 @@ resource "aws_route_table" "internet-gateway" {
   }
 
   tags = {
-    Name = "nat-gateway"
+    Name = var.name
   }
 }
 
@@ -144,7 +144,7 @@ resource "aws_instance" "nat-gateway" {
 
 
   tags = {
-    Name = "nat-gateway"
+    Name = var.name
   }
 }
 

@@ -5,3 +5,7 @@ variable "ami-id" {
 variable "ssh-key" {
   default = "ssh_aws_ed25519"
 }
+
+variable "name" {
+  default = "42-nat-gateway"
+}
