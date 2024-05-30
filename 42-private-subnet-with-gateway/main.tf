@@ -134,12 +134,12 @@ resource "aws_route_table" "internet-gateway" {
 }
 
 resource "aws_instance" "nat-gateway" {
-  ami                    = "ami-0bd50a18ee156cba0"
+  ami                    = var.ami-id
   instance_type          = "t2.micro"
   availability_zone      = "eu-central-1a"
   subnet_id              = aws_subnet.nat-gateway-private.id
   private_ip             = "10.0.1.10"
-  key_name               = "ssh_aws_ed25519"
+  key_name               = var.ssh-key
   vpc_security_group_ids = [aws_security_group.nat-gateway.id]
 
 
@@ -149,12 +149,12 @@ resource "aws_instance" "nat-gateway" {
 }
 
 resource "aws_instance" "nat-gateway-public" {
-  ami                    = "ami-0bd50a18ee156cba0"
+  ami                    = var.ami-id
   instance_type          = "t2.micro"
   availability_zone      = "eu-central-1a"
   subnet_id              = aws_subnet.nat-gateway-public.id
   associate_public_ip_address = true
   private_ip             = "10.0.0.10"
-  key_name               = "ssh_aws_ed25519"
+  key_name               = var.ssh-key
   vpc_security_group_ids = [aws_security_group.nat-gateway.id]
 }
