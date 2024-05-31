@@ -10,3 +10,15 @@ resource "aws_launch_template" "asg-53-lt" {
   vpc_security_group_ids = ["sg-082f2af5714b40905"]
 
 }
+
+resource "aws_autoscaling_group" "asg-53-asg" {
+  name               = "asg-53-asg"
+  desired_capacity   = 2
+  min_size           = 2
+  max_size           = 2
+  availability_zones = ["eu-central-1a", "eu-central-1b"]
+  default_cooldown   = 60
+  launch_template {
+    id = aws_launch_template.asg-53-lt.id
+  }
+}
