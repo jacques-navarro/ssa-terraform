@@ -105,24 +105,31 @@ resource "aws_vpc_security_group_egress_rule" "asg-53-egr-ssh" {
 }
 
 resource "aws_launch_template" "asg-53-lt" {
-  name                   = "${local.name-prefix}-lt"
-  image_id               = var.ami-id
-  instance_type          = "t2.micro"
-  key_name               = var.ssh-key
-  vpc_security_group_ids = [var.security-group-id]
+  name          = "${local.name-prefix}-lt"
+  image_id      = var.ami-id
+  instance_type = "t2.micro"
+  key_name      = var.ssh-key
+
+  # assign public IP addresses to instances 
+  # security groups must be assigned inside of network_interfaces block if it exists 
+  network_interfaces {
+    security_groups             = [aws_security_group.asg-53-sg.id]
+    associate_public_ip_address = true
+    delete_on_termination       = true
+  }
 
   tags = {
-    name= "53-asg-lt"
+    name = "${local.name}-lt"
   }
 }
 
 resource "aws_autoscaling_group" "asg-53-asg" {
-  name               = "${local.name-prefix}-asg"
-  desired_capacity   = 2
-  min_size           = 2
-  max_size           = 2
-  availability_zones = [var.availability-zones[0], var.availability-zones[1]]
-  default_cooldown   = 60
+  name                = "${local.name-prefix}-asg"
+  desired_capacity    = 2
+  min_size            = 2
+  max_size            = 2
+  vpc_zone_identifier = [aws_subnet.asg-53-subnet-pub1.id, aws_subnet.asg-53-subnet-pub2.id]
+  default_cooldown    = 60
 
   launch_template {
     id = aws_launch_template.asg-53-lt.id
