@@ -117,6 +117,18 @@ resource "aws_vpc_security_group_egress_rule" "asg-53-egr-ssh" {
   }
 }
 
+resource "aws_vpc_security_group_egress_rule" "asg-53-egr-install" {
+  security_group_id = aws_security_group.asg-53-sg.id
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 1
+  ip_protocol       = "tcp"
+  to_port           = 65535
+
+  tags = {
+    name = "${local.name}-egr-ssh"
+  }
+}
+
 resource "aws_launch_template" "asg-53-lt" {
   name          = "${local.name-prefix}-lt"
   image_id      = var.ami-id
@@ -130,6 +142,8 @@ resource "aws_launch_template" "asg-53-lt" {
     associate_public_ip_address = true
     delete_on_termination       = true
   }
+
+  user_data = "${filebase64("user_data.sh")}"
 
   tags = {
     name = "${local.name}-lt"
