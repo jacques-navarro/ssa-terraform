@@ -143,8 +143,41 @@ resource "aws_autoscaling_group" "alb-57-asg" {
   vpc_zone_identifier = [aws_subnet.alb-57-subnet-pub1.id,
   aws_subnet.alb-57-subnet-pub2.id]
   default_cooldown = 60
+  target_group_arns = [aws_lb_target_group.alb-57-tg.id]
 
   launch_template {
     id = aws_launch_template.alb-57-lt.id
+  }
+}
+
+resource "aws_lb_target_group" "alb-57-tg" {
+  name     = "${local.name-prefix}-tg"
+  vpc_id   = aws_vpc.alb-57-vpc.id
+  port     = 80
+  protocol = "HTTP"
+
+  tags = {
+    name = "${local.name}-tg"
+  }
+}
+
+resource "aws_lb" "alb-57-alb" {
+  name            = "${local.name-prefix}-alb"
+  subnets         = [aws_subnet.alb-57-subnet-pub1.id, aws_subnet.alb-57-subnet-pub2.id]
+  security_groups = [aws_security_group.alb-57-sg.id]
+
+  tags = {
+    name = "${local.name}-alb"
+  }
+}
+
+resource "aws_lb_listener" "alb-57-lst" {
+  load_balancer_arn = aws_lb.alb-57-alb.id
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    target_group_arn = aws_lb_target_group.alb-57-tg.id
+    type             = "forward"
   }
 }
