@@ -128,7 +128,7 @@ resource "aws_launch_template" "alb-57-lt" {
     security_groups = [aws_security_group.alb-57-sg.id]
   }
 
-  user_data = "${filebase64("user_data.sh")}"
+  user_data = filebase64("user_data.sh")
 
   tags = {
     name = "${local.name}-lt"
