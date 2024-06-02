@@ -113,3 +113,38 @@ resource "aws_vpc_security_group_egress_rule" "alb-57-egr-all" {
   }
 }
 
+resource "aws_launch_template" "alb-57-lt" {
+  name          = "alb-57-lt"
+  image_id      = var.ami-id
+  instance_type = var.instance-type
+  key_name      = var.ssh_key
+
+  network_interfaces {
+    # assign public IP addresses to instances 
+    associate_public_ip_address = true
+    delete_on_termination       = true
+    # security groups must be assigned inside of network_interfaces
+    # block if a network_interfaces block exists 
+    security_groups = [aws_security_group.alb-57-sg.id]
+  }
+
+  user_data = "${filebase64("user_data.sh")}"
+
+  tags = {
+    name = "${local.name}-lt"
+  }
+}
+
+resource "aws_autoscaling_group" "alb-57-asg" {
+  name             = "${local.name-prefix}-asg"
+  desired_capacity = 2
+  min_size         = 2
+  max_size         = 2
+  vpc_zone_identifier = [aws_subnet.alb-57-subnet-pub1.id,
+  aws_subnet.alb-57-subnet-pub2.id]
+  default_cooldown = 60
+
+  launch_template {
+    id = aws_launch_template.alb-57-lt.id
+  }
+}
