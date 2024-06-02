@@ -22,7 +22,7 @@ resource "aws_subnet" "alb-57-subnet-pub1" {
   availability_zone = "eu-central-1a"
 
   tags = {
-    name = "$(local.name)-subnet-pub1"
+    name = "${local.name}-subnet-pub1"
   }
 
 }
@@ -33,7 +33,7 @@ resource "aws_subnet" "alb-57-subnet-pub2" {
   availability_zone = "eu-central-1b"
 
   tags = {
-    name = "$(local.name)-subnet-pub2"
+    name = "${local.name}-subnet-pub2"
   }
 }
 
@@ -41,7 +41,7 @@ resource "aws_internet_gateway" "alb-57-ig" {
   vpc_id = aws_vpc.alb-57-vpc.id
 
   tags = {
-    name = "$(local.name)-ig"
+    name = "${local.name}-ig"
   }
 }
 
@@ -73,7 +73,7 @@ resource "aws_security_group" "alb-57-sg" {
   vpc_id = aws_vpc.alb-57-vpc.id
 
   tags = {
-    name = "$(local.name)-sg"
+    name = "${local.name}-sg"
   }
 }
 
@@ -85,7 +85,7 @@ resource "aws_vpc_security_group_ingress_rule" "alb-57-igr-ssh" {
   to_port           = 22
 
   tags = {
-    name = "$(local.name)-igr-ssh"
+    name = "${local.name}-igr-ssh"
   }
 }
 
@@ -97,7 +97,7 @@ resource "aws_vpc_security_group_ingress_rule" "alb-57-igr-http" {
   to_port           = 80
 
   tags = {
-    name = "$(local.name)-igr-http"
+    name = "${local.name}-igr-http"
   }
 }
 
@@ -109,7 +109,7 @@ resource "aws_vpc_security_group_egress_rule" "alb-57-egr-all" {
   to_port           = 65535
 
   tags = {
-    name = "$(local.name)-egr-all"
+    name = "${local.name}-egr-all"
   }
 }
 
