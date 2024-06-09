@@ -61,5 +61,47 @@ resource "aws_route_table" "vpcp-86-rt-c1" {
 
 resource "aws_route_table_association" "vpcp-86-rta-c1" {
   route_table_id = aws_route_table.vpcp-86-rt-c1.id
-  subnet_id = aws_subnet.vpcp-86-subnet-c1.id
+  subnet_id      = aws_subnet.vpcp-86-subnet-c1.id
+}
+
+resource "aws_security_group" "vpcp-86-sg-c1" {
+  vpc_id = local.vpc-id
+
+  tags = {
+    Name = "${local.name}sg${local.name-suffix}"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "vpcp-86-igr-ssh-c1" {
+  security_group_id = local.sg-id
+
+  cidr_ipv4   = local.cidr-all
+  from_port   = 22
+  ip_protocol = "tcp"
+  to_port     = 22
+
+  tags = {
+    Name = "${local.name}igr-ssh${local.name-suffix}"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "vpc-86-igr-icmp" {
+  security_group_id = local.sg-id
+  cidr_ipv4         = local.cidr-local
+  from_port         = 8
+  ip_protocol       = "icmp"
+  to_port           = 0
+}
+
+resource "aws_instance" "vpcp-86-ec2-c1" {
+  ami                         = var.ami-id
+  instance_type               = var.instance-type
+  subnet_id                   = aws_subnet.vpcp-86-subnet-c1.id
+  associate_public_ip_address = true
+  key_name                    = var.ssh-key
+  vpc_security_group_ids      = ["${local.sg-id}"]
+
+  tags = {
+    Name = "${local.name}ec2${local.name-suffix}"
+  }
 }
