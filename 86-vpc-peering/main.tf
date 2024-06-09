@@ -9,12 +9,12 @@ provider "aws" {
 }
 
 locals {
-  name       = "86-vpcp-"
-  cidr-local = "10.0.0.0/16"
-  cidr-all   = "0.0.0.0/0"
+  name     = "86-vpcp-"
+  cidr-all = "0.0.0.0/0"
 
   region-c1            = "eu-central-1"
   name-suffix-c1       = "-c1"
+  cidr-local-c1        = "10.0.0.0/16"
   vpc-id-c1            = aws_vpc.vpcp-86-vpc-c1.id
   availability-zone-c1 = "eu-central-1a"
   cidr-subnet-c1       = "10.0.0.0/24"
@@ -22,15 +22,16 @@ locals {
 
   region-c2            = "eu-central-2"
   name-suffix-c2       = "-c2"
+  cidr-local-c2        = "10.1.0.0/16"
   vpc-id-c2            = aws_vpc.vpcp-86-vpc-c2.id
   availability-zone-c2 = "eu-central-2a"
-  cidr-subnet-c2       = "10.0.1.0/24"
+  cidr-subnet-c2       = "10.1.0.0/24"
   sg-id-c2             = aws_security_group.vpcp-86-sg-c2.id
 }
 
 resource "aws_vpc" "vpcp-86-vpc-c1" {
   provider             = aws.c1
-  cidr_block           = local.cidr-local
+  cidr_block           = local.cidr-local-c1
   enable_dns_hostnames = true
 
   tags = {
@@ -63,7 +64,7 @@ resource "aws_route_table" "vpcp-86-rt-c1" {
   vpc_id   = local.vpc-id-c1
 
   route {
-    cidr_block = local.cidr-local
+    cidr_block = local.cidr-local-c1
     gateway_id = "local"
   }
 
@@ -109,7 +110,7 @@ resource "aws_vpc_security_group_ingress_rule" "vpcp-86-igr-ssh-c1" {
 resource "aws_vpc_security_group_ingress_rule" "vpc-86-igr-icmp-c1" {
   provider          = aws.c1
   security_group_id = local.sg-id-c1
-  cidr_ipv4         = local.cidr-local
+  cidr_ipv4         = local.cidr-local-c1
   from_port         = 8
   ip_protocol       = "icmp"
   to_port           = 0
@@ -117,8 +118,8 @@ resource "aws_vpc_security_group_ingress_rule" "vpc-86-igr-icmp-c1" {
 
 resource "aws_instance" "vpcp-86-ec2-c1" {
   provider                    = aws.c1
-  ami                         = var.ami-id
-  instance_type               = var.instance-type
+  ami                         = var.ami-id-c1
+  instance_type               = var.instance-type-c1
   subnet_id                   = aws_subnet.vpcp-86-subnet-c1.id
   associate_public_ip_address = true
   key_name                    = var.ssh-key
@@ -133,7 +134,7 @@ resource "aws_instance" "vpcp-86-ec2-c1" {
 
 resource "aws_vpc" "vpcp-86-vpc-c2" {
   provider             = aws.c2
-  cidr_block           = local.cidr-local
+  cidr_block           = local.cidr-local-c2
   enable_dns_hostnames = true
 
   tags = {
@@ -166,7 +167,7 @@ resource "aws_route_table" "vpcp-86-rt-c2" {
   vpc_id   = local.vpc-id-c2
 
   route {
-    cidr_block = local.cidr-local
+    cidr_block = local.cidr-local-c2
     gateway_id = "local"
   }
 
@@ -212,16 +213,17 @@ resource "aws_vpc_security_group_ingress_rule" "vpcp-86-igr-ssh-c2" {
 resource "aws_vpc_security_group_ingress_rule" "vpc-86-igr-icmp-c2" {
   provider          = aws.c2
   security_group_id = local.sg-id-c2
-  cidr_ipv4         = local.cidr-local
+  cidr_ipv4         = local.cidr-local-c2
   from_port         = 8
   ip_protocol       = "icmp"
   to_port           = 0
 }
 
 resource "aws_instance" "vpcp-86-ec2-c2" {
-  provider                    = aws.c2
-  ami                         = "ami-053ea2f9d1d6ac54c"
-  instance_type               = "t3.micro"
+  provider = aws.c2
+  ami      = var.ami-id-c2
+  # t2.micro
+  instance_type               = var.instance-type-c2
   subnet_id                   = aws_subnet.vpcp-86-subnet-c2.id
   associate_public_ip_address = true
   key_name                    = var.ssh-key
