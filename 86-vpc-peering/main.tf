@@ -220,9 +220,8 @@ resource "aws_vpc_security_group_ingress_rule" "vpc-86-igr-icmp-c2" {
 }
 
 resource "aws_instance" "vpcp-86-ec2-c2" {
-  provider = aws.c2
-  ami      = var.ami-id-c2
-  # t2.micro
+  provider                    = aws.c2
+  ami                         = var.ami-id-c2
   instance_type               = var.instance-type-c2
   subnet_id                   = aws_subnet.vpcp-86-subnet-c2.id
   associate_public_ip_address = true
