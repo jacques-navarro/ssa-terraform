@@ -73,6 +73,11 @@ resource "aws_route_table" "vpcp-86-rt-c1" {
     gateway_id = aws_internet_gateway.vpcp-86-ig-c1.id
   }
 
+  route {
+    cidr_block = local.cidr-local-c2
+    vpc_peering_connection_id = aws_vpc_peering_connection.vpcp-86-pc-c1.id
+  }
+
   tags = {
     Name = "${local.name}rt${local.name-suffix-c1}"
   }
@@ -174,6 +179,11 @@ resource "aws_route_table" "vpcp-86-rt-c2" {
   route {
     cidr_block = local.cidr-all
     gateway_id = aws_internet_gateway.vpcp-86-ig-c2.id
+  }
+
+  route {
+    cidr_block = local.cidr-local-c1
+    vpc_peering_connection_id = aws_vpc_peering_connection.vpcp-86-pc-c1.id
   }
 
   tags = {
