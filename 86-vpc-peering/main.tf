@@ -3,6 +3,11 @@ provider "aws" {
   region = local.region-c1
 }
 
+provider "aws" {
+  alias = "c2"
+  region = local.region-c2
+}
+
 locals {
   name              = "86-vpcp-"
   cidr-local        = "10.0.0.0/16"
@@ -11,9 +16,15 @@ locals {
   region-c1            = "eu-central-1"
   name-suffix-c1       = "-c1"
   vpc-id-c1            = aws_vpc.vpcp-86-vpc-c1.id
-  sg-id-c1             = aws_security_group.vpcp-86-sg-c1.id
-  cidr-subnet-c1       = "10.0.0.0/24"
   availability-zone-c1 = "eu-central-1a"
+  cidr-subnet-c1       = "10.0.0.0/24"
+  sg-id-c1             = aws_security_group.vpcp-86-sg-c1.id
+
+  region-c2            = "eu-central-2"
+  name-suffix-c2       = "-c2"
+  vpc-id-c2            = aws_vpc.vpcp-86-vpc-c2.id
+  availability-zone-c2 = "eu-central-2a"
+  cidr-subnet-c2       = "10.0.1.0/24"
 }
 
 resource "aws_vpc" "vpcp-86-vpc-c1" {
@@ -115,4 +126,61 @@ resource "aws_instance" "vpcp-86-ec2-c1" {
   tags = {
     Name = "${local.name}ec2${local.name-suffix-c1}"
   }
+}
+
+# aws.c2 - eu-central-2
+
+resource "aws_vpc" "vpcp-86-vpc-c2" {
+  provider = aws.c2
+  cidr_block           = local.cidr-local
+  enable_dns_hostnames = true
+
+  tags = {
+    Name = "${local.name}vpc${local.name-suffix-c2}"
+  }
+}
+
+resource "aws_subnet" "vpcp-86-subnet-c2" {
+  provider = aws.c2
+  vpc_id            = local.vpc-id-c2
+  cidr_block        = local.cidr-subnet-c2
+  availability_zone = local.availability-zone-c2
+
+  tags = {
+    Name = "${local.name}subnet${local.name-suffix-c2}"
+  }
+}
+
+resource "aws_internet_gateway" "vpcp-86-ig-c2" {
+  provider = aws.c2
+  vpc_id = local.vpc-id-c2
+
+  tags = {
+    Name = "${local.name}ig${local.name-suffix-c2}"
+  }
+}
+
+resource "aws_route_table" "vpcp-86-rt-c2" {
+  provider = aws.c2
+  vpc_id = local.vpc-id-c2
+
+  route {
+    cidr_block = local.cidr-local
+    gateway_id = "local"
+  }
+
+  route {
+    cidr_block = local.cidr-all
+    gateway_id = aws_internet_gateway.vpcp-86-ig-c2.id
+  }
+
+  tags = {
+    Name = "${local.name}rt${local.name-suffix-c2}"
+  }
+}
+
+resource "aws_route_table_association" "vpcp-86-rta-c2" {
+  provider = aws.c2
+  route_table_id = aws_route_table.vpcp-86-rt-c2.id
+  subnet_id      = aws_subnet.vpcp-86-subnet-c2.id
 }
