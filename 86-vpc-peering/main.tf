@@ -233,3 +233,24 @@ resource "aws_instance" "vpcp-86-ec2-c2" {
     Name = "${local.name}ec2${local.name-suffix-c2}"
   }
 }
+
+resource "aws_vpc_peering_connection" "vpcp-86-pc-c1" {
+  provider    = aws.c1
+  peer_vpc_id = aws_vpc.vpcp-86-vpc-c2.id
+  peer_region = "eu-central-2"
+  vpc_id      = aws_vpc.vpcp-86-vpc-c1.id
+
+  tags = {
+    Name = "${local.name}pc${local.name-suffix-c1}"
+  }
+}
+
+resource "aws_vpc_peering_connection_accepter" "vpcp-86-pca-c2" {
+  provider                  = aws.c2
+  vpc_peering_connection_id = aws_vpc_peering_connection.vpcp-86-pc-c1.id
+  auto_accept               = true
+
+  tags = {
+    Name = "${local.name}pc${local.name-suffix-c2}"
+  }
+}
