@@ -91,3 +91,14 @@ resource "aws_route_table_association" "vpce-88-rta-pri" {
   route_table_id = aws_route_table.vpce-88-rt-pri.id
   subnet_id      = aws_subnet.vpce-88-subnet-pri.id
 }
+
+resource "aws_vpc_endpoint" "vpce-88-endpoint-s3" {
+  vpc_id          = local.vpc-id
+  service_name    = "com.amazonaws.eu-central-1.s3"
+  route_table_ids = [aws_route_table.vpce-88-rt-pri.id]
+  auto_accept     = true
+
+  tags = {
+    Name = "${local.name}endpoint${local.name-suffix-pri}"
+  }
+}
