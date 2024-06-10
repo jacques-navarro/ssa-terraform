@@ -31,6 +31,52 @@ resource "aws_subnet" "vpce-88-subnet-pub" {
   }
 }
 
+resource "aws_security_group" "vpce-88-sg-pub" {
+  vpc_id = local.vpc-id
+
+  tags = {
+    Name = "${local.name}sg${local.name-suffix-pub}"
+  }
+}
+
+resource "aws_vpc_security_group_ingress_rule" "vpce-88-igr-ssh" {
+  security_group_id = aws_security_group.vpce-88-sg-pub.id
+  cidr_ipv4         = local.cidr-all
+  from_port         = 22
+  ip_protocol       = "tcp"
+  to_port           = 22
+
+  tags = {
+    Name = "${local.name}igr-ssh${local.name-suffix-pub}"
+  }
+}
+
+resource "aws_vpc_security_group_egress_rule" "vpce-88-egr-all" {
+  security_group_id = aws_security_group.vpce-88-sg-pub.id
+  cidr_ipv4         = local.cidr-all
+  from_port         = 1
+  ip_protocol       = "tcp"
+  to_port           = 65535
+
+  tags = {
+    Name = "${local.name}egr-all${local.name-suffix-pub}"
+  }
+}
+
+resource "aws_instance" "vpce-88-ec2" {
+  ami                         = "ami-01e444924a2233b07"
+  instance_type               = "t2.micro"
+  subnet_id                   = aws_subnet.vpce-88-subnet-pub.id
+  associate_public_ip_address = true
+  key_name                    = "ssh_aws_ed25519"
+  security_groups             = [aws_security_group.vpce-88-sg-pub.id]
+
+
+  tags = {
+    Name = "${local.name}ec2${local.name-suffix-pub}"
+  }
+}
+
 resource "aws_subnet" "vpce-88-subnet-pri" {
   vpc_id            = local.vpc-id
   cidr_block        = "10.0.1.0/24"
