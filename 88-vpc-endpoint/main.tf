@@ -71,6 +71,7 @@ resource "aws_instance" "vpce-88-ec2" {
   key_name                    = "ssh_aws_ed25519"
   security_groups             = [aws_security_group.vpce-88-sg-pub.id]
 
+  iam_instance_profile        = "S3ReadOnly"
 
   tags = {
     Name = "${local.name}ec2${local.name-suffix-pub}"
