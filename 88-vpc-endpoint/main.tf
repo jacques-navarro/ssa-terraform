@@ -31,6 +31,39 @@ resource "aws_subnet" "vpce-88-subnet-pub" {
   }
 }
 
+resource "aws_internet_gateway" "vpce-88-ig" {
+  vpc_id = local.vpc-id
+
+  tags = {
+    Name = "${local.name}ig"
+  }
+}
+
+resource "aws_route_table" "vpce-88-rt-pub" {
+  vpc_id = local.vpc-id
+
+  route {
+    cidr_block = local.cidr-local
+    gateway_id = "local"
+  }
+
+  route {
+    cidr_block = local.cidr-all
+    gateway_id = aws_internet_gateway.vpce-88-ig.id
+  }
+
+  tags = {
+    Name = "${local.name}rt${local.name-suffix-pub}"
+  }
+
+}
+
+resource "aws_route_table_association" "vpce-88-rta-pub" {
+  route_table_id = aws_route_table.vpce-88-rt-pub.id
+  subnet_id      = aws_subnet.vpce-88-subnet-pub.id
+
+}
+
 resource "aws_security_group" "vpce-88-sg-pub" {
   vpc_id = local.vpc-id
 
@@ -84,41 +117,8 @@ resource "aws_subnet" "vpce-88-subnet-pri" {
   availability_zone = local.availability-zone
 
   tags = {
-    Name = "${local.name}subnet${local.name-suffix-pub}"
+    Name = "${local.name}subnet${local.name-suffix-pri}"
   }
-}
-
-resource "aws_internet_gateway" "vpce-88-ig" {
-  vpc_id = local.vpc-id
-
-  tags = {
-    Name = "${local.name}ig"
-  }
-}
-
-resource "aws_route_table" "vpce-88-rt-pub" {
-  vpc_id = local.vpc-id
-
-  route {
-    cidr_block = local.cidr-local
-    gateway_id = "local"
-  }
-
-  route {
-    cidr_block = local.cidr-all
-    gateway_id = aws_internet_gateway.vpce-88-ig.id
-  }
-
-  tags = {
-    Name = "${local.name}rt${local.name-suffix-pub}"
-  }
-
-}
-
-resource "aws_route_table_association" "vpce-88-rta-pub" {
-  route_table_id = aws_route_table.vpce-88-rt-pub.id
-  subnet_id      = aws_subnet.vpce-88-subnet-pub.id
-
 }
 
 resource "aws_route_table" "vpce-88-rt-pri" {
@@ -129,7 +129,7 @@ resource "aws_route_table" "vpce-88-rt-pri" {
     gateway_id = "local"
   }
 
-  tags = {
+  tags = {  
     Name = "${local.name}rt${local.name-suffix-pri}"
   }
 }
