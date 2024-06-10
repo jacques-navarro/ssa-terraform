@@ -64,7 +64,7 @@ resource "aws_vpc_security_group_egress_rule" "vpce-88-egr-all" {
 }
 
 resource "aws_instance" "vpce-88-ec2" {
-  ami                         = "ami-01e444924a2233b07"
+  ami                         = "ami-06801a226628c00ce"
   instance_type               = "t2.micro"
   subnet_id                   = aws_subnet.vpce-88-subnet-pub.id
   associate_public_ip_address = true
