@@ -78,6 +78,11 @@ resource "aws_security_group" "frp-128-sg" {
   }
 }
 
+resource "aws_route_table_association" "frp-128-rta-pub2" {
+  route_table_id = aws_route_table.frp-128-rt.id
+  subnet_id      = aws_subnet.frp-128-sub-pub2.id
+}
+
 resource "aws_vpc_security_group_ingress_rule" "frp-128-igr-ssh" {
   security_group_id = aws_security_group.frp-128-sg.id
   cidr_ipv4         = local.cidr-all
