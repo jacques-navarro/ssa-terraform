@@ -135,6 +135,7 @@ resource "aws_autoscaling_group" "frp-128-asg" {
   max_size            = 2
   vpc_zone_identifier = [aws_subnet.frp-128-sub-pub1.id, aws_subnet.frp-128-sub-pub2.id]
   default_cooldown    = 60
+  target_group_arns = [aws_lb_target_group.frp-128-tg.id]
 
   launch_template {
     id = aws_launch_template.frp-128-lt.id
@@ -145,7 +146,7 @@ resource "aws_lb_target_group" "frp-128-tg" {
   name     = "128-frp-tg"
   vpc_id   = local.vpc-id
   port     = 80
-  protocol = "tcp"
+  protocol = "HTTP"
 
   tags = {
     Name = "${local.name}lt"
@@ -154,7 +155,7 @@ resource "aws_lb_target_group" "frp-128-tg" {
 
 resource "aws_lb" "frp-128-lb" {
   name            = "128-frp-lb"
-  subnets         = [aws_subnet.frp-128-sub-pub1, aws_subnet.frp-128-sub-pub2]
+  subnets         = [aws_subnet.frp-128-sub-pub1.id, aws_subnet.frp-128-sub-pub2.id]
   security_groups = [aws_security_group.frp-128-sg.id]
 
   tags = {
