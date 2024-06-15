@@ -1,5 +1,6 @@
 variable "ami-id" {
-  default = "ami-06801a226628c00ce"
+  # Ubuntu 24.04
+  default = "ami-01e444924a2233b07"
 }
 
 variable "instance-type" {
