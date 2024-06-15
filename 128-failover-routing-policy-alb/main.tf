@@ -95,12 +95,12 @@ resource "aws_vpc_security_group_ingress_rule" "frp-128-igr-ssh" {
   }
 }
 
-resource "aws_vpc_security_group_ingress_rule" "frp-128-ir-http" {
+resource "aws_vpc_security_group_ingress_rule" "frp-128-igr-http" {
   security_group_id = aws_security_group.frp-128-sg.id
   cidr_ipv4         = local.cidr-all
-  from_port         = 1025
+  from_port         = 80
   ip_protocol       = "tcp"
-  to_port           = 65535
+  to_port           = 80
 
   tags = {
     Name = "${local.name}igr-http"
