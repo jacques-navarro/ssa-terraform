@@ -107,6 +107,18 @@ resource "aws_vpc_security_group_ingress_rule" "frp-128-igr-http" {
   }
 }
 
+resource "aws_vpc_security_group_egress_rule" "frp-128-egr-updates" {
+  security_group_id = aws_security_group.frp-128-sg.id
+  cidr_ipv4         = local.cidr-all
+  from_port         = 1
+  ip_protocol       = "tcp"
+  to_port           = 65535
+
+  tags = {
+    Name = "${local.name}igr-updates"
+  }
+}
+
 resource "aws_launch_template" "frp-128-lt" {
   name          = "128-frp-lt"
   image_id      = "ami-06912d73bfa9ce345"
