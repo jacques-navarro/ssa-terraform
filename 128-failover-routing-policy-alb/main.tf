@@ -121,7 +121,7 @@ resource "aws_vpc_security_group_egress_rule" "frp-128-egr-updates" {
 
 resource "aws_launch_template" "frp-128-lt" {
   name          = "128-frp-lt"
-  image_id      = "ami-06912d73bfa9ce345"
+  image_id      = "ami-01e444924a2233b07"
   instance_type = "t2.micro"
 
   key_name = "ssh_aws_ed25519"
@@ -147,7 +147,7 @@ resource "aws_autoscaling_group" "frp-128-asg" {
   max_size            = 2
   vpc_zone_identifier = [aws_subnet.frp-128-sub-pub1.id, aws_subnet.frp-128-sub-pub2.id]
   default_cooldown    = 60
-  target_group_arns = [aws_lb_target_group.frp-128-tg.id]
+  target_group_arns   = [aws_lb_target_group.frp-128-tg.id]
 
   launch_template {
     id = aws_launch_template.frp-128-lt.id
